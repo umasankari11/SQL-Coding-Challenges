@@ -540,3 +540,114 @@ WHERE s.Salary > (
 );
 
 
+
+CREATE TABLE departments (
+    department_id INT PRIMARY KEY,
+    department_name VARCHAR(100) NOT NULL
+);
+
+
+INSERT INTO departments (department_id, department_name) VALUES
+(1, 'HR'),
+(2, 'Finance'),
+(3, 'Engineering'),
+(4, 'Sales'),
+(5, 'Marketing');
+
+
+CREATE TABLE employees (
+    employee_id INT PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    department_id INT,
+    manager_id INT,
+    salary DECIMAL(10,2),
+    join_date DATE,
+    FOREIGN KEY (department_id) REFERENCES departments(department_id),
+    FOREIGN KEY (manager_id) REFERENCES employees(employee_id)
+);
+
+INSERT INTO employees (employee_id, first_name, last_name, department_id, manager_id, salary, join_date) VALUES
+(1, 'John', 'Smith', 3, NULL, 120000, '2018-03-10'),   -- Manager (Engineering)
+(2, 'Sarah', 'Johnson', 3, 1, 95000,  '2019-07-15'),
+(3, 'Michael', 'Brown', 3, 1, 88000,  '2021-01-05'),
+(4, 'Emily', 'Davis', 2, NULL, 110000, '2017-11-01'),  -- Manager (Finance)
+(5, 'David', 'Wilson', 2, 4, 67000,  '2020-04-20'),
+(6, 'Sophia', 'Miller', 1, NULL, 75000, '2022-08-11'), -- Manager (HR)
+(7, 'Daniel', 'Taylor', 1, 6, 52000,  '2023-01-12'),
+(8, 'Olivia', 'Anderson', 4, NULL, 90000, '2019-09-30'), -- Manager (Sales)
+(9, 'James', 'Thomas', 4, 8, 58000,  '2020-06-25'),
+(10,'Ava', 'Jackson', 5, NULL, 65000, '2023-05-18'),    -- Marketing
+(11,'Liam', 'White', 5, 10, 48000,   '2023-11-12'),
+(12,'Noah', 'Harris', NULL, NULL, 40000, '2021-12-01'); -- No department assigned
+
+
+-- Display all employees sorted by salary (ascending).
+Select * from employees Order By salary ASC;
+
+-- Show top 5 highest-paid employees.
+
+Select * from employees Order By salary Desc
+Limit 5;
+
+-- Find distinct department names.
+
+select distinct department_name from departments;
+
+-- Show distinct departments with alias as Dept.
+select distinct department_name as Dept
+from departments;
+
+-- Get all employees with salary greater than 50,000.
+
+SELECT *
+FROM employees
+WHERE salary > 50000;
+
+SELECT *
+FROM departments;
+
+-- Retrieve employees from the HR department earning more than 60,000.
+
+SELECT e.*, d.department_name
+FROM employees e
+JOIN departments d
+    ON e.department_id = d.department_id
+WHERE d.department_name = 'HR'
+  AND e.salary > 60000;
+  
+  
+-- Find total number of employees.
+
+SELECT COUNT(*) AS total_employees
+FROM employees;
+
+-- Find average salary by department.
+
+SELECT d.department_name,
+       AVG(e.salary) AS avg_salary
+FROM employees e
+JOIN departments d
+    ON e.department_id = d.department_id
+GROUP BY d.department_name;
+
+-- -Get total employees in each department.
+
+SELECT d.department_name,
+       COUNT(e.employee_id) AS total_employees
+FROM employees e
+JOIN departments d
+    ON e.department_id = d.department_id
+GROUP BY d.department_name;
+
+-- Show departments with more than 5 employees.
+
+SELECT d.department_name,
+       COUNT(e.employee_id) AS total_employees
+FROM employees e
+JOIN departments d
+    ON e.department_id = d.department_id
+GROUP BY d.department_name
+HAVING COUNT(e.employee_id) > 5;
+
+
